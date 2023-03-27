@@ -1,0 +1,11 @@
+[
+  {
+    "id": 2,
+    "title": "CAFÉ BRASIL BOURBON PREMIUM",
+    "description": "Cuerpo suave con notas a chocolate y caramelo con una acidez brillante e intensa",
+    "price": 120000,
+    "thumbnail": "https://www.modobarista.com/product_images/d/649/Bourbon__79367_zoom.png",
+    "code": "CBB",
+    "stock": 750
+  }
+]

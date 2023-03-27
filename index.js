@@ -1,7 +1,16 @@
+const fs = require("fs");
+
 class ProductManager {
   constructor() {
     this.products = [];
+    this.path = "./db/productos.json";
   }
+
+  appendProduct = async () => {
+    const toJSON = JSON.stringify(this.products, null, 2);
+    await fs.promises.writeFile(this.path, toJSON);
+  };
+
   addProducts = (title, description, price, thumbnail, code, stock) => {
     const product = {
       title,
@@ -34,23 +43,62 @@ class ProductManager {
     let product = this.products.find((prod) => prod.code === newProduct.code);
     if (product) return `Ya existe un producto con este codigo`;
 
-    return this.products.push({ id: this.products.length + 1, ...newProduct });
+    return (
+      this.products.push({ id: this.products.length + 1, ...newProduct }) &&
+      this.appendProduct()
+    );
   }
 
-  getProducts() {
-    return this.products;
-  }
+  getProducts = async () => {
+    try {
+      const productosDb = await fs.promises.readFile(this.path, "utf-8");
+      console.log(productosDb);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
-  getProductById(id) {
-    let product = this.products.find((prod) => prod.id === id);
-    if (!product) return `Producto inexistente`;
-    return product;
-  }
+  getProductById = async (id) => {
+    try {
+      const productosDb = await fs.promises.readFile(this.path, "utf-8");
+      const productoId = JSON.parse(productosDb);
+      console.log(productoId[id - 1]);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  updateProduct = async (id, obj) => {
+    try {
+      const productosDb = await fs.promises.readFile(this.path, "utf-8");
+      const productoId = JSON.parse(productosDb);
+
+      const productoUpdt = Object.assign(productoId[id - 1], obj);
+      console.log(productoUpdt);
+      this.products = productoId;
+      this.appendProduct();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  deleteProduct = async (id) => {
+    try {
+      const productosDb = await fs.promises.readFile(this.path, "utf-8");
+      const productoId = JSON.parse(productosDb);
+
+      productoId.splice(id - 1, 1);
+      this.products = productoId;
+      this.appendProduct();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 }
 
 const product = new ProductManager();
 
-product.addProduct({
+/* product.addProduct({
   title: `CAFÉ COSTA RICA`,
   description: `Marcadas notas frutales y achocolatadas con una nota limon que da un balance perfecto.`,
   price: 3500,
@@ -66,8 +114,8 @@ product.addProduct({
   thumbnail: `https://www.modobarista.com/product_images/d/649/Bourbon__79367_zoom.png`,
   code: `CBB`,
   stock: 750,
-});
-
+}); */
+/*
 console.log(
   product.addProduct({
     title: `CAFÉ BRASIL CATUAI`,
@@ -79,5 +127,13 @@ console.log(
   })
 );
 
-console.log(product.getProducts());
-console.log(product.getProductById(4));
+console.log(product.getProductById(4)); */
+
+product.getProductById(1);
+
+/* product.updateProduct(2, {
+  title: "CAFÉ BRASIL BOURBON PREMIUM",
+  price: 120000,
+}); */
+
+/* product.deleteProduct(1); */
