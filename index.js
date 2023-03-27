@@ -130,7 +130,7 @@ product.addProduct({
 
 /* console.log(product.getProductById(3)); */
 
-product.getProductById(2);
+/* product.getProductById(2); */
 
 /* product.updateProduct(2, {
   title: "CAFÉ BRASIL BOURBON PREMIUM",
