@@ -58,11 +58,14 @@ class ProductManager {
     }
   };
 
-  getProductById = async (id) => {
+  getProductById = async (idProduct) => {
     try {
       const productosDb = await fs.promises.readFile(this.path, "utf-8");
       const productoId = JSON.parse(productosDb);
-      console.log(productoId[id - 1]);
+      const find = productoId.find((value) => value.id === idProduct);
+      return console.log(
+        find ? find : "No se encontró un producto con el ID proporcionado"
+      );
     } catch (err) {
       console.log(err);
     }
@@ -114,26 +117,24 @@ product.addProduct({
   thumbnail: `https://www.modobarista.com/product_images/d/649/Bourbon__79367_zoom.png`,
   code: `CBB`,
   stock: 750,
+});
+
+product.addProduct({
+  title: `CAFÉ BRASIL CATUAI`,
+  description: `Una combinacion agradable de caramelo, nueces y almendras. Cuerpo mediano y baja acidez.`,
+  price: 6000,
+  thumbnail: `https://www.modobarista.com/product_images/l/093/Catuai__98631_zoom.png`,
+  code: `CBC`,
+  stock: 900,
 }); */
-/*
-console.log(
-  product.addProduct({
-    title: `CAFÉ BRASIL CATUAI`,
-    description: `Una combinacion agradable de caramelo, nueces y almendras. Cuerpo mediano y baja acidez.`,
-    price: 6000,
-    thumbnail: `https://www.modobarista.com/product_images/l/093/Catuai__98631_zoom.png`,
-    code: `CBC`,
-    stock: 900,
-  })
-);
 
-console.log(product.getProductById(4)); */
+/* console.log(product.getProductById(3)); */
 
-product.getProductById(1);
+product.getProductById(2);
 
 /* product.updateProduct(2, {
   title: "CAFÉ BRASIL BOURBON PREMIUM",
   price: 120000,
-}); */
-
+});
+ */
 /* product.deleteProduct(1); */

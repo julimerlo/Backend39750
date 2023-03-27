@@ -1,11 +1,11 @@
 [
   {
-    "id": 2,
-    "title": "CAFÉ BRASIL BOURBON PREMIUM",
-    "description": "Cuerpo suave con notas a chocolate y caramelo con una acidez brillante e intensa",
-    "price": 120000,
-    "thumbnail": "https://www.modobarista.com/product_images/d/649/Bourbon__79367_zoom.png",
-    "code": "CBB",
-    "stock": 750
+    "id": 3,
+    "title": "CAFÉ BRASIL CATUAI",
+    "description": "Una combinacion agradable de caramelo, nueces y almendras. Cuerpo mediano y baja acidez.",
+    "price": 6000,
+    "thumbnail": "https://www.modobarista.com/product_images/l/093/Catuai__98631_zoom.png",
+    "code": "CBC",
+    "stock": 900
   }
 ]
