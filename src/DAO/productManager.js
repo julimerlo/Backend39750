@@ -3,105 +3,147 @@ import fs from "fs";
 class ProductManager {
   constructor() {
     this.products = [];
-    this.path = "../db/productos.json";
+    this.path = "./src/DAO/productos.json";
   }
 
-  appendProduct = async () => {
+  __appendProduct = async () => {
     const toJSON = JSON.stringify(this.products, null, 2);
     await fs.promises.writeFile(this.path, toJSON);
   };
 
-  addProducts = (title, description, price, thumbnail, code, stock) => {
+  addProduct = async (
+    title,
+    description,
+    price,
+    status,
+    category,
+    thumbnail,
+    code,
+    stock
+  ) => {
+    const productsFS = await this.getProducts();
+    // console.log(productsFS);
+    this.products = productsFS;
+
     const product = {
       title,
       description,
       price,
+      status,
+      category,
       thumbnail,
       code,
       stock,
     };
-
-    /* ID AUTOINCREMENTABLE */
-
+    // console.log(product, 'codigo----');
+    // Validacion de codigo
+    const validarCodigo = this.products.find(
+      (productos) => productos.code === product.code
+    );
+    if (validarCodigo) {
+      return {
+        status: "error",
+        message: "El producto no se pudo agregar porque el codigo es repetido",
+      };
+    }
+    // ID Autoincremental
     if (this.products.length === 0) {
       product.id = 1;
-    } else product.id = this.products[this.products.length - 1].id + 1;
+    } else {
+      product.id = this.products[this.products.length - 1].id + 1;
+    }
+
+    // Verifica que el objeto tenga todos sus valores
+    if (Object.values(product).every((value) => value)) {
+      product.status === "false"
+        ? (product.status = false)
+        : (product.status = true);
+      console.log(product.price, "precio");
+      product.price = Number(product.price);
+      product.stock = Number(product.stock);
+      product.thumbnail = [product.thumbnail];
+      this.products.push(product);
+      this.__appendProduct();
+      return {
+        status: "succes",
+        message: "El producto se registró",
+        producto: product,
+      };
+    }
+    return { status: "error", message: "Todos los campos son obligatorios" };
   };
-
-  addProduct(newProduct) {
-    /* Validaciones */
-    if (
-      !newProduct.title ||
-      !newProduct.description ||
-      !newProduct.price ||
-      !newProduct.thumbnail ||
-      !newProduct.code ||
-      !newProduct.stock
-    )
-      return `Todos los campos son obligatorios`;
-
-    let product = this.products.find((prod) => prod.code === newProduct.code);
-    if (product) return `Ya existe un producto con este codigo`;
-
-    return (
-      this.products.push({ id: this.products.length + 1, ...newProduct }) &&
-      this.appendProduct()
-    );
-  }
 
   getProducts = async () => {
     try {
-      const productsList = await fs.promises.readFile(this.path, "utf-8");
-      const products = JSON.parse(productsList);
-      return products;
+      const getFileProducts = await fs.promises.readFile(this.path, "utf-8");
+      if (getFileProducts.length === 0) return [];
+      return JSON.parse(getFileProducts);
+    } catch (err) {
+      console.log(err);
+      return { status: "error", error: err };
+    }
+  };
+
+  getProductById = async (id) => {
+    try {
+      const getFileProducts = await fs.promises.readFile(this.path, "utf-8");
+      const parseProducst = JSON.parse(getFileProducts);
+      console.log(parseProducst[id - 1]);
+      if (!parseProducst[id - 1]) return "Error! No existe";
+
+      return parseProducst[id - 1];
     } catch (err) {
       console.log(err);
     }
   };
 
-  getProductById = async (idProduct) => {
-    try {
-      const productosDb = await fs.promises.readFile(this.path, "utf-8");
-      const productoId = JSON.parse(productosDb);
-      const find = productoId.find((value) => value.id === idProduct);
-      return find;
-    } catch (err) {
-      console.log(err);
-    }
+  updateProduct = async (pid, data) => {
+    const getFileProducts = await fs.promises.readFile(this.path, "utf-8");
+    const parseProducts = JSON.parse(getFileProducts);
+    // console.log(parseProducts);
+    if (isNaN(Number(pid)))
+      return { status: "error", message: "No es un id válido" };
+
+    const findId = parseProducts.findIndex((product) => product.id == pid);
+    if (findId === -1)
+      return { status: "error", message: "No se encontró el id" };
+
+    this.products = parseProducts.map((element) => {
+      if (element.id == pid) {
+        element = Object.assign(element, data);
+        return element;
+      }
+      return element;
+    });
+
+    this.__appendProduct();
+    return returnedTarget;
   };
 
-  updateProduct = async (id, obj) => {
-    try {
-      const productosDb = await fs.promises.readFile(this.path, "utf-8");
-      const productoId = JSON.parse(productosDb);
+  deleteProduct = async (pid) => {
+    const getFileProducts = await fs.promises.readFile(this.path, "utf-8");
+    const parseProducts = JSON.parse(getFileProducts);
+    if (isNaN(Number(pid)))
+      return { status: "error", message: "No es un id válido" };
 
-      const productoUpdt = Object.assign(productoId[id - 1], obj);
-      console.log(productoUpdt);
-      this.products = productoId;
-      this.appendProduct();
-    } catch (err) {
-      console.log(err);
-    }
-  };
+    const findId = parseProducts.findIndex((product) => product.id == pid);
+    if (findId === -1)
+      return { status: "error", message: "No se encontró el id" };
 
-  deleteProduct = async (id) => {
-    try {
-      const productosDb = await fs.promises.readFile(this.path, "utf-8");
-      const productoId = JSON.parse(productosDb);
+    this.products = parseProducts.filter((product) => product.id !== pid);
 
-      productoId.splice(id - 1, 1);
-      this.products = productoId;
-      this.appendProduct();
-    } catch (err) {
-      console.log(err);
-    }
+    this.appendProduct();
+    return {
+      status: "success",
+      message: `Se eliminó el producto con id ${pid}`,
+    };
   };
 }
 
-/* const product = new ProductManager("./db/productos.json"); */
+const product = new ProductManager();
 /*
 product.addProduct({
-  title: `CAFÉ COSTA RICA`,
+  title: `CAFÉ COSTAa RICA`,
   description: `Marcadas notas frutales y achocolatadas con una nota limon que da un balance perfecto.`,
   price: 3500,
   thumbnail: `https://www.modobarista.com/product_images/d/003/Costa_Rica__50415_zoom.png`,

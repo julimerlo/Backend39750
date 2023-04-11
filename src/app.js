@@ -1,39 +1,20 @@
-import ProductManager from "./productManager.js";
 import express from "express";
+import productRouter from "../src/routers/products.router.js";
+import routerCar from "./routers/carts.router.js";
 
 const app = express();
-const PORT = 8080;
 
-const productManager = new ProductManager();
-
+// Middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use("/static", express.static("./src/public"));
 
-const server = app.listen(PORT, () => {
-  console.log(`Sintonizando radio ${server.address().port}`);
-});
+// Router de carritos
+app.use("/api/carts", routerCar);
 
-server.on("error", (error) => {
-  console.log("Error", error);
-});
+// Router de productos
+app.use("/api/products", productRouter);
 
-app.get("/products", async (req, res) => {
-  try {
-    const products = await productManager.getProducts();
-    const limit = req.query.limit;
-    if (!limit) return res.send(products);
-    res.send(products.slice(0, limit));
-  } catch (error) {
-    console.log(error);
-  }
-});
-
-app.get("/products/:pid", async (req, res) => {
-  try {
-    const id = parseInt(req.params.pid);
-    const product = await productManager.getProductById(id);
-    if (!product) res.send("PRODUCT NOT FOUND");
-    res.send(product);
-  } catch (error) {
-    console.log(error);
-  }
+app.listen(8080, () => {
+  console.log("Estoy escuchando el puerto 8080");
 });
