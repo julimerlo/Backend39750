@@ -13,6 +13,8 @@ router.get("/", async (req, res) => {
   // http://localhost:8080/products?limit=2
   const { limit } = req.query;
   try {
+    if (isNaN(Number(limit)) && limit)
+      return res.status(400).send({ status: "No es un numero valido" });
     const valueReturned = await pm.getProducts();
     if (valueReturned.error)
       return res.status(200).send({ status: "Sin productos", valueReturned });
@@ -27,7 +29,8 @@ router.get("/:pid", async (req, res) => {
   try {
     // http://localhost:8080/products/2
     console.log(req.params.pid);
-
+    if (isNaN(Number(req.params.pid)))
+      return res.status(400).send({ status: "No es un numero valido" });
     const product = await pm.getProductById(req.params.pid);
     res.status(200).send({ product });
   } catch (err) {
@@ -37,28 +40,32 @@ router.get("/:pid", async (req, res) => {
 
 // ****************** POST ****************** //
 
-router.post("/", async (req, res) => {
+router.post("/formulario", uploader.single("thumbnail"), async (req, res) => {
   try {
     // Obtenemos el body
     const productSend = req.body;
 
     // Comprobamos que todos los campos estén completos
     const campoVacio = Object.values(productSend).find((value) => value === "");
-    console.log(campoVacio);
+    console.log(productSend);
     if (campoVacio) {
       return res
         .status(400)
         .send({ status: "error", message: "Falta completar algún campo" });
     }
     // desestructuración para enviar al método addProduct
-    const { title, description, price, status, thumbnail, code, stock } =
-      productSend;
+    const { title, description, price, category, code, stock } = productSend;
+
+    const status = true;
+    const thumbnail = req.file.path;
+    console.log(stock);
 
     const valueReturned = await pm.addProduct(
       title,
       description,
       price,
       status,
+      category,
       thumbnail,
       code,
       stock
@@ -154,6 +161,8 @@ router.put("/:pid", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
   try {
     const { pid } = req.params;
+    if (isNaN(Number(pid)))
+      return res.status(400).send({ status: "No es un numero valido" });
     const response = await pm.deleteProduct(pid);
     console.log(response);
     if (!response.error) return res.status(400).send({ response });
