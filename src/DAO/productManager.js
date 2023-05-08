@@ -10,7 +10,7 @@ class ProductManager {
     const toJSON = JSON.stringify(this.products, null, 2);
     await fs.promises.writeFile(this.path, toJSON);
   };
-
+  
   addProduct = async (
     title,
     description,
@@ -22,6 +22,7 @@ class ProductManager {
     stock
   ) => {
     const productsFS = await this.getProducts();
+    // console.log(productsFS);
     this.products = productsFS;
 
     const product = {
@@ -34,6 +35,7 @@ class ProductManager {
       code,
       stock,
     };
+    // console.log(product, 'codigo----');
     // Validacion de codigo
     const validarCodigo = this.products.find(
       (productos) => productos.code === product.code
@@ -44,7 +46,6 @@ class ProductManager {
         message: "El producto no se pudo agregar porque el codigo es repetido",
       };
     }
-
     // ID Autoincremental
     if (this.products.length === 0) {
       product.id = 1;
@@ -131,12 +132,14 @@ class ProductManager {
 
     this.products = parseProducts.filter((product) => product.id !== pid);
 
-    this.appendProduct();
+    this.__appendProduct();
     return {
       status: "success",
       message: `Se eliminó el producto con id ${pid}`,
     };
   };
 }
+
+const product = new ProductManager();
 
 export default ProductManager;

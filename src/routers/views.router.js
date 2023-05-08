@@ -1,11 +1,10 @@
 import { Router } from "express";
-// import getUsers from '../DAO/users.js';
 
 const usersRouter = Router();
 
 usersRouter.get("/vista", (req, res) => {
   let testUser = {
-    name: "Luis",
+    name: "Julian",
   };
 
   res.render("index", testUser);

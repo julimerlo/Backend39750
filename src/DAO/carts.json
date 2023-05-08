@@ -8,38 +8,8 @@
       {
         "idProduct": 2,
         "cantidad": 11
-      },
-      {
-        "idProduct": 1,
-        "cantidad": 2
       }
     ],
     "id": 1
-  },
-  {
-    "productos": [
-      {
-        "idProduct": 8,
-        "cantidad": 2
-      },
-      {
-        "idProduct": 6,
-        "cantidad": 12
-      }
-    ],
-    "id": 2
-  },
-  {
-    "productos": [
-      {
-        "idProduct": 8,
-        "cantidad": 2
-      },
-      {
-        "idProduct": 6,
-        "cantidad": 12
-      }
-    ],
-    "id": 3
   }
 ]
